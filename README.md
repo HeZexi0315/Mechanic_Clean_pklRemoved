@@ -36,3 +36,4 @@ Utilizing AI and Machine Learning to match dating profiles with one another
 #### Using Class to Add/Format a New Profile
 - [Enhance your Python Project Code with Classes](https://towardsdatascience.com/enhance-your-python-project-code-with-classes-5a19d0e9f841?source=friends_link&sk=f16512c9abfabf4b73e993952bc3250b)
 "# Mechanic_Clean_pklRemoved" 
+"# Mechanic_Clean_pklRemoved" 
