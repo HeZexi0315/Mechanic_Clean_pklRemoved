@@ -24,7 +24,8 @@ with open("vectorized_refined_1.pkl", 'rb') as fp:
 model = load("refined_model_1.joblib")
 
 # Helper Functions
-#--------------------------------------------------------
+# --------------------------------------------------------
+
 
 def string_convert(x):
     """
@@ -40,25 +41,35 @@ def vectorization(df, columns, input_df):
     """
     Using recursion, iterate through the df until all the categories have been vectorized
     """
-
+    print("-----------start----------------------------")
     column_name = columns[0]
-
-    # Checking if the column name has been removed already
+    print("----------column name------------")
+    print(df[column_name])
+    # s = pd.Series(df[column_name], dtype="category")
+    # print("s.cat.code")
+    # print(s.cat.codes)
+    # # Checking if the column name has been removed already
     if column_name not in ['Bios', 'location', 'Specialisation', 'Qualification']:
-
+        print('column_name - column namenot in all')
+        print(column_name)
         return df, input_df
 
     # Encoding columns with respective values
     if column_name in ['location', 'Qualification']:
-
-        # Getting labels for the original df
-        df[column_name.lower()] = df[column_name].cat.codes
-
+       # Getting labels for the original df
+        df[column_name.lower()] = df[column_name].cat.codes#before this code, column_name is still in string
+        print("----------column name lower------------")
+        print(df[column_name.lower()])#after .cat.codes, this is been transform to int
         # Dictionary for the codes
-        d = dict(enumerate(df[column_name].cat.categories))
+        print("----------column name------------")
+        column_name = columns[0]
+        print(df[column_name])#< ---  issue is here (?? why are you been changed 
+        d = dict(enumerate(df[column_name].cat.categories)) #<--- if 
+        print("----------------------")
 
+        print("yes, i get the dictionary")
         d = {v: k for k, v in d.items()}
-
+        print(d)
         # Getting labels for the input_df
         input_df[column_name.lower()] = d[input_df[column_name].iloc[0]]
 
@@ -68,9 +79,10 @@ def vectorization(df, columns, input_df):
         df = df.drop(column_name, 1)
 
         return vectorization(df, df.columns, input_df)
-
     # Vectorizing the other columns
     else:
+        print('column_name in bois specialisation')
+        print(column_name)
         # Instantiating the Vectorizer
         vectorizer = CountVectorizer()
 
@@ -319,27 +331,27 @@ st.table(new_profile)
 button = st.button("Click to find matching mechanic")
 
 if button:
-    try:
-        with st.spinner('Finding your Top 10 Matches...'):
-            # Vectorizing the New Data
-            df_v, input_df = vectorization(df, df.columns, new_profile)
+    # try:
+    with st.spinner('Finding your Top 10 Matches...'):
+        # Vectorizing the New Data
+        df_v, input_df = vectorization(df, df.columns, new_profile)
 
-            # Scaling the New Data
-            new_df = scaling(df_v, input_df)
+        # Scaling the New Data
+        new_df = scaling(df_v, input_df)
 
-            # Predicting/Classifying the new data
-            cluster = model.predict(new_df)
+        # Predicting/Classifying the new data
+        cluster = model.predict(new_df)
 
-            # Finding the top 10 related profiles
-            top_10_df = top_ten(cluster, vect_df, new_df)
+        # Finding the top 10 related profiles
+        top_10_df = top_ten(cluster, vect_df, new_df)
 
-            # Success message
-            st.success("Found your Top 10 Most Relevant mechanic")
-            st.balloons()
+        # Success message
+        st.success("Found your Top 10 Most Relevant mechanic")
+        st.balloons()
 
-            # Displaying the Top 10 similar profiles
-            st.table(top_10_df)
-    except Exception as e:
-        print(e)
-        print("Next entry.")
-        print()
+        # Displaying the Top 10 similar profiles
+        st.table(top_10_df)
+    # except Exception as e:
+    #     print(e)
+    #     print("Next entry.")
+    #     print()
